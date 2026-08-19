@@ -84,3 +84,53 @@ test.fail('TC-SES-07: Cart is isolated per user', async ({ loginPage, inventoryP
   await loginPage.login(users.problem,users.password);
   await inventoryPage.expectShoppingCartEmpty();
 });
+
+test.describe('Session survives a page refresh', () => {
+  test.use({ sessionUser: users.standard});
+
+  test('TC-SES-08: Session survives a page refresh', async ({ inventoryPage }) => {
+    await inventoryPage.navigateToInventoryPage();
+    await inventoryPage.addToCart(products.backpack);
+    await inventoryPage.expectShoppingCartAmount('1');
+    await inventoryPage.refreshInventoryPage();
+    await inventoryPage.expectSessionUsername(users.standard);
+    await inventoryPage.expectInventoryPageRendered();
+    await inventoryPage.expectShoppingCartAmount('1');
+  });
+});
+
+test.describe('Manually deleting the session cookie logs the user out', () => {
+  test.use({ sessionUser: users.standard });
+
+  test('TC-SES-09: Manually deleting the session cookie logs the user out', async ({ loginPage, inventoryPage, session }) => {
+    await inventoryPage.navigateToInventoryPage();
+    await inventoryPage.expectSessionUsername(users.standard);
+    
+    await session.deleteSessionCookie();
+    await loginPage.expectNoSessionCookie();
+    
+    await inventoryPage.navigateToInventoryPage();
+    await loginPage.expectLoginPageRendered();
+    await loginPage.expectErrorMessageText("Epic sadface: You can only access '/inventory.html' when you are logged in.");
+  });
+});
+
+test.describe('Forged session cookie value', () => {
+  test.use({ sessionUser: 'hacker' });
+
+  test('TC-SES-10: Forged session cookie value', async ({ loginPage, inventoryPage }) => {
+    await inventoryPage.navigateToInventoryPage();
+    await loginPage.expectLoginPageRendered();
+    await loginPage.expectErrorMessageText("Epic sadface: You can only access '/inventory.html' when you are logged in.");
+  });
+});
+
+test.describe('Forged cookie for the locked-out user', () => {
+  test.use({ sessionUser: users.lockedOut});
+
+  test('TC-SES-11: Forged cookie for the locked-out user', async ({ loginPage, inventoryPage}) => {
+    await inventoryPage.navigateToInventoryPage();
+    await loginPage.expectLoginPageRendered();
+    await loginPage.expectErrorMessageText("Epic sadface: You can only access '/inventory.html' when you are logged in.");
+  });
+});
