@@ -1,9 +1,14 @@
 import { test as base } from '@playwright/test';
 import { env } from '../../resources/config/env.config';
 
+export type Session = {
+  deleteSessionCookie(): Promise<void>;
+};
+
 export type SessionFixtures = {
   sessionUser: string | null;
   seedSession: void;
+  session: Session;
 };
 
 export const test = base.extend<SessionFixtures>({
@@ -25,4 +30,12 @@ export const test = base.extend<SessionFixtures>({
     },
     { auto: true },
   ],
+
+  session: async ({ page }, use) => {
+    await use({
+      async deleteSessionCookie() {
+        await page.context().clearCookies({ name: 'session-username' });
+      },
+    });
+  }
 });
