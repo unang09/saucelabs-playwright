@@ -55,19 +55,47 @@ export class InventoryPageLocators {
     return this.page.getByTestId('inventory-item-name');
   }
 
+  get inventoryItemImgs(): Locator {
+    return this.inventoryItems.locator('img');
+  }
+
+  public inventoryItemImg(slug: string): Locator {
+    return this.page.getByTestId(`inventory-item-${slug}-img`);
+  }
+
+  public inventoryItemName(name: string): Locator {
+    return this.page.getByTestId('inventory-item-name').getByText(name, { exact: true });
+  }
+
   get inventoryItemDescriptions(): Locator {
-    return this.page.getByTestId('inventory-item-description');
+    return this.page.getByTestId('inventory-item-desc');
+  }
+
+  public inventoryItemCard(id: string): Locator {
+    return this.inventoryItems.filter({ has: this.page.getByTestId(`item-${id}-title-link`) });
+  }
+
+  public inventoryItemCardName(id: string): Locator {
+    return this.inventoryItemCard(id).getByTestId('inventory-item-name');
+  }
+
+  public inventoryItemCardDescription(id: string): Locator {
+    return this.inventoryItemCard(id).getByTestId('inventory-item-desc');
+  }
+
+  public inventoryItemCardPrice(id: string): Locator {
+    return this.inventoryItemCard(id).getByTestId('inventory-item-price');
   }
 
   get inventoryItemPrices(): Locator {
     return this.page.getByTestId('inventory-item-price');
   }
 
-  public inventoryItemAddToCartButtons(slug: string): Locator {
+  public inventoryItemAddToCartButton(slug: string): Locator {
     return this.page.getByTestId(`add-to-cart-${slug}`);
   }
 
-  public inventoryItemRemoveFromCartButtons(slug: string): Locator {
+  public inventoryItemRemoveFromCartButton(slug: string): Locator {
     return this.page.getByTestId(`remove-${slug}`);
   }
 }
