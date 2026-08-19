@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { LoginPageLocators } from './login.locators';
 
 export class LoginPage {
@@ -10,6 +10,13 @@ export class LoginPage {
 
   public async navigateToLoginPage(): Promise<void> {
     await this.page.goto('/');
+  }
+
+  public async expectLoginPageRendered(): Promise<void> {
+    await expect(this.page).toHaveURL(/\/$/);
+    await expect(this.locators.emailInput).toBeVisible();
+    await expect(this.locators.passwordInput).toBeVisible();
+    await expect(this.locators.loginButton).toBeVisible();
   }
 
   public async fillUsername(username: string): Promise<void> {
@@ -34,6 +41,10 @@ export class LoginPage {
     await this.submitLogin();
   }
 
+  public async navigateBack(): Promise<void> {
+    await this.page.goBack();
+  }
+
   public async expectPasswordFieldMasked(): Promise<void> {
     await expect(this.locators.passwordInput).toHaveAttribute('type', 'password');
   }
@@ -54,4 +65,19 @@ export class LoginPage {
     await this.locators.dismissErrorButton.click();
   }
 
+  public async expectLoginSlowerThan(username: string, password: string,minMs: number): Promise<void> {
+    const start = Date.now();
+    await this.login(username, password);
+    const elapsed = Date.now() - start;
+    expect(elapsed).toBeGreaterThan(minMs);
+  }
+
+  public async expectNoSessionCookie(): Promise<void> {
+    await expect
+      .poll(async () => {
+        const cookies = await this.page.context().cookies();
+        return cookies.find((cookie) => cookie.name === 'session-username');
+      })
+      .toBeUndefined();
+  }
 }

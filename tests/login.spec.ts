@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/merge.fixture';
+import { test } from './fixtures/merge.fixture';
 import { users } from '../resources/test-data/users';
 
 test('TC-LOGIN-01: Login with "standard_user"', async ({ loginPage, inventoryPage }) => {
@@ -18,10 +18,9 @@ test('TC-LOGIN-02: Login with "problem_user"', async ({ loginPage, inventoryPage
 test('TC-LOGIN-03: Login with "performance_glitch_user"', async ({ loginPage, inventoryPage }) => {
   test.slow();
   await loginPage.navigateToLoginPage();
-  const start = Date.now();
-  await loginPage.login(users.performanceGlitch, users.password);
+  await loginPage.expectLoginSlowerThan(users.performanceGlitch, users.password, 2000);
   await inventoryPage.expectInventoryPageRendered();
-  expect(Date.now() - start).toBeGreaterThan(2000);
+  await inventoryPage.expectSessionUsername(users.performanceGlitch);
 });
 
 test('TC-LOGIN-04: Login with "error_user"', async ({ loginPage, inventoryPage }) => {
