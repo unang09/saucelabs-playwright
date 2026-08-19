@@ -1,5 +1,6 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { InventoryPageLocators } from './inventory.locators';
+import type { Product } from '../test-data/products';
 
 export class InventoryPage {
   public readonly locators: InventoryPageLocators;
@@ -25,5 +26,22 @@ export class InventoryPage {
         return cookies.find((cookie) => cookie.name === 'session-username')?.value;
       })
       .toBe(username);
+  }
+
+  public async logout(): Promise<void> {
+    await this.locators.headerBurgerMenu.click();
+    await this.locators.sidebarMenuLogout.click();
+  }
+
+  public async addToCart(product: Product): Promise<void> {
+    await this.locators.inventoryItemAddToCartButtons(product.slug).click();
+  }
+
+  public async expectShoppingCartAmount(itemQty: string): Promise<void> {
+    await expect(this.locators.headerShoppingCartBadge).toHaveText(itemQty);
+  }
+
+  public async expectShoppingCartEmpty(): Promise<void> {
+    await expect(this.locators.headerShoppingCartBadge).toBeHidden();
   }
 }
