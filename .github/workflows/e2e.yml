@@ -35,6 +35,10 @@ jobs:
 
       - name: Run Playwright tests
         run: npx playwright test
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          REPORT_URL: https://unang09.github.io/saucelabs-playwright/
 
       - name: Upload HTML report
         if: always()
