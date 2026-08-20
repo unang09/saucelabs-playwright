@@ -78,6 +78,29 @@ test.fail('TC-SES-07: Cart is isolated per user', async ({ loginPage, inventoryP
 
 **Cases carry their ID.** Every test is named `TC-<AREA>-<NN>`, so a case in the [test plan](resources/test-cases.md) maps to a line in the report and to `npx playwright test -g "TC-LOGIN-06"`.
 
+## Telegram notifications
+
+A custom reporter (`resources/reporters/telegram.reporter.ts`) posts a run summary to Telegram when CI finishes — pass or fail. The HTML report stays the report; the message is the notification, and links back to it.
+
+```
+Swag Labs E2E — FAILED
+Branch master · 1a2b3c4 · push by unang09
+
+18 passed, 6 failed, 0 flaky, 0 skipped
+Duration 46s
+chromium 6/8 · firefox 6/8 · webkit 6/8
+
+Failed
+TC-INV-99 [chromium, firefox, webkit] Deliberately wrong product count
+Error: expect(locator).toHaveText(expected) failed Locator: getByTestId(...)
+
+Full report · CI run
+```
+
+Failures are grouped by case rather than listed per browser, so one broken selector reads as one line across three projects instead of three separate entries. The reporter no-ops unless `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` are set, so local runs stay silent.
+
+To enable it: create a bot with [@BotFather](https://t.me/botfather), send it a message, read your chat id from `https://api.telegram.org/bot<TOKEN>/getUpdates`, then add both values as repository secrets.
+
 ## Run it
 
 ```bash
@@ -101,6 +124,7 @@ npm test
 │   ├── cart/
 │   ├── checkout/
 │   ├── config/env.config.ts    # validated environment loading
+│   ├── reporters/              # Telegram run-summary reporter
 │   ├── test-data/              # users.ts, products.ts
 │   └── test-cases.md           # the written test plan
 └── tests/

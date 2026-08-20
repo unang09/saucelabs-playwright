@@ -23,7 +23,8 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  /* The Telegram reporter no-ops unless TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are set. */
+  reporter: [['html'], ['./resources/reporters/telegram.reporter.ts']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
