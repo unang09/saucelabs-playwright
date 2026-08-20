@@ -1,11 +1,23 @@
 {
   "name": "sauce-labs",
   "version": "1.0.0",
-  "description": "",
+  "description": "End-to-end test automation for Swag Labs (saucedemo.com) with Playwright, TypeScript and the Page Object Model",
   "main": "index.js",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "test-automation",
+    "page-object-model",
+    "e2e"
+  ],
+  "author": "unang09",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
